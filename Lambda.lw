@@ -23,7 +23,8 @@ exampleLambdaFunction: Lambda.Function {
     }]
   },
   handler: 'exports.myHandler',
-  code: lambdaCode
+  code: lambdaCode,
+  region: AWS.Us-west-2
 }
 
 lambdaCode: Lambda.CodeZipFile(Bytes.readFile('lambda/lambdaHandler.js.zip'))
