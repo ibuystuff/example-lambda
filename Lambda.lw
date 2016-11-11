@@ -11,7 +11,7 @@ import Ludwig.Bytes as Bytes
 #########################
 # Lambda
 #########################
-exampleLambdaFunction: Lambda.Function {
+exampleLambdaFunction: Lambda.Function.new {
   functionName: 'exampleFunction',
   runtime: Lambda.Nodejs4_3,
   role: IAM.Role.new {
