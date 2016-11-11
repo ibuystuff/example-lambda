@@ -1,3 +1,6 @@
+# This example composition will create an example lambda function
+# written in Node.js using a supplied IAM role.
+
 composition
 
 import Fugue.AWS as AWS
@@ -8,32 +11,20 @@ import Ludwig.Bytes as Bytes
 #########################
 # Lambda
 #########################
-example-lambda-function: Lambda.Function.new {
-  functionName: 'example-function',
+exampleLambdaFunction: Lambda.Function.new {
+  functionName: 'exampleFunction',
   runtime: Lambda.Nodejs4_3,
-  role: lambda-role,
+  role: IAM.Role.new {
+    roleName: 'lambdaRole',
+    assumeRolePolicyDocument: IAM.Policy.AssumeRole.lambda,
+    rolePolicies: [IAM.Policy.new {
+      policyName: 'lambdaExecute',
+      policyDocument: String.readFileUtf8('lambda/lambda_policy.json')
+    }]
+  },
   handler: 'exports.myHandler',
-  description: 'an example lambda function',
-  timeout: 60,
-  memorySize: 128,
-  publish: True,
-  vpcConfig: None,
-  region: AWS.Us-west-2,
-  code: lambda-code
+  code: lambdaCode,
+  region: AWS.Us-west-2
 }
 
-lambda-code: Lambda.CodeZipFile(Bytes.readFile('lambda/lambdaHandler.js.zip'))
-
-#########################
-# IAM
-#########################
-lambda-policy: IAM.Policy.new {
-  policyName: 'lambdaExecute',
-  policyDocument: String.readFileUtf8('lambda/lambda_policy.json')
-}
-
-lambda-role: IAM.Role.new {
-  roleName: 'lambda-role',
-  assumeRolePolicyDocument: IAM.Policy.AssumeRole.lambda,
-  rolePolicies: [lambda-policy]
-}
+lambdaCode: Lambda.CodeZipFile(Bytes.readFile('lambda/lambdaHandler.js.zip'))
